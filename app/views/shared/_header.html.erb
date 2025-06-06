@@ -1,0 +1,15 @@
+<header class="w-full text-gray-700 bg-white border-b border-gray-100 shadow-sm body-font">
+  <div class="container flex items-center justify-between p-6 mx-auto">
+    <nav class="flex items-center">
+      <% if current_user %>
+        <%# ログインしている時の表示 %>
+        <div class="flex items-center space-x-4">
+          <%= button_to "ログアウト", logout_path, method: :post, class: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" %>
+        </div>
+      <% else %>
+        <%# ログインしていない時の表示 (Googleログインボタン) %>
+        <%= link_to "Googleでログイン", "/auth/google_oauth2", class: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" %>
+      <% end %>
+    </nav>
+  </div>
+</header>

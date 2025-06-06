@@ -1,0 +1,25 @@
+<%# app/views/shared/_header.html.erb %>
+
+<!-- シンプルなヘッダー例 -->
+<header class="bg-gray-800 text-white p-4">
+  <div class="container mx-auto">
+    <h1 class="text-xl font-bold">My Awesome App</h1>
+  </div>
+</header>
+
+<header class="w-full text-gray-700 bg-white border-b border-gray-100 shadow-sm body-font">
+  <%# この items-center が垂直中央揃えの鍵です %>
+  <div class="container flex items-center justify-between p-6 mx-auto">
+    <%= link_to "My Project", root_path, class: "flex items-center font-bold text-gray-900 title-font" %>
+
+    <nav class="flex items-center">
+      <% if current_user %>
+        <%# ログインしている時の表示 %>
+        ...
+      <% else %>
+        <%# ログインしていない時の表示 (Googleログインボタン) %>
+        ...
+      <% end %>
+    </nav>
+  </div>
+</header>

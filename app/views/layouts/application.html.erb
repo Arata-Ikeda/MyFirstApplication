@@ -1,20 +1,7 @@
-<%# app/views/layouts/application.html.erb %>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Awesome App</title>
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  <%= javascript_importmap_tags %>
-</head>
-
 <body>
-  <%# ここにフラッシュメッセージの表示を追加 %>
-  <p class="notice"><%= notice %></p>
-  <p class="alert"><%= alert %></p>
+  <%= render 'shared/header' %>  
 
-  <%= yield %>
+  <main>
+    <%= yield %> 
+  </main>
 </body>
-</html>

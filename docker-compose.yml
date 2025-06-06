@@ -6,6 +6,7 @@ services:
     command: "./bin/rails server -b 0.0.0.0"
     volumes:
       - .:/rails
+      - ./config/credentials:/rails/config/credentials
     ports:
       - "3000:3000"
     environment:

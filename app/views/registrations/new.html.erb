@@ -1,0 +1,19 @@
+<h1>ユーザー登録</h1>
+
+<%= form_with model: @user, url: user_registration_path, local: true, html: { multipart: true } do |f| %>
+  <div>
+    <%= f.label :name, 'ユーザー名' %><br>
+    <%= f.text_field :name, required: true, maxlength: 15, value: '' %>
+  </div>
+  <div>
+    <%= f.label :email, 'メールアドレス' %><br>
+    <%= f.email_field :email, value: @user.email, readonly: true, disabled: true %>
+  </div>
+  <div>
+    <%= f.label :icon, 'アイコン画像' %><br>
+    <%= f.file_field :icon, accept: 'image/*', required: true %>
+  </div>
+  <%= f.hidden_field :google_id, value: @user.google_id %>
+  <%= f.hidden_field :email, value: @user.email %>
+  <%= f.submit '登録', class: 'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded' %>
+<% end %>

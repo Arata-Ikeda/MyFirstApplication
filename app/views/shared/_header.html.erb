@@ -2,12 +2,16 @@
   <div class="container flex items-center justify-between p-6 mx-auto">
     <nav class="flex items-center">
       <% if current_user %>
-        <%# ログインしている時の表示 %>
         <div class="flex items-center space-x-4">
+          <% if current_user.icon.attached? %>
+            <%= image_tag url_for(current_user.icon.variant(resize_to_fill: [40, 40])), alt: 'アイコン', class: 'w-10 h-10 rounded-full border' %>
+          <% else %>
+            <%= image_tag 'icon.png', alt: 'デフォルトアイコン', class: 'w-10 h-10 rounded-full border' %>
+          <% end %>
+          <span class="font-bold"><%= current_user.name %></span>
           <%= button_to "ログアウト", logout_path, method: :post, class: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" %>
         </div>
       <% else %>
-        <%# ログインしていない時の表示 (Googleログインボタン) %>
         <%= link_to "Googleでログイン", "/auth/google_oauth2", class: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" %>
       <% end %>
     </nav>

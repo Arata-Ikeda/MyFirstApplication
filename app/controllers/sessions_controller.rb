@@ -1,29 +1,31 @@
 class SessionsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: :create
   def create
-    user = find_or_create_from_auth_hash(auth_hash)
+    user = User.find_by(google_id: auth_hash['uid'])
     if user
       log_in user
-      session[:profile_image_url] = auth_hash['info']['image']
+      redirect_to root_path
+    else
+      # 新規Googleアカウントの場合は登録画面へ
+      session[:google_auth] = {
+        email: auth_hash['info']['email'],
+        name: auth_hash['info']['name'],
+        google_id: auth_hash['uid'],
+        icon_url: auth_hash['info']['image']
+      }
+      redirect_to new_user_registration_path
     end
-    redirect_to root_path
   end
 
   def destroy
     log_out
     session.delete(:profile_image_url)
+    session.delete(:google_auth)
     redirect_to root_path
   end
 
   private
-
     def auth_hash
       request.env['omniauth.auth']
-    end
-
-    def find_or_create_from_auth_hash(auth_hash)
-      email = auth_hash['info']['email']
-      User.find_or_create_by(email: email) do |user|
-        user.update(email: email)
-      end
     end
 end

@@ -1,0 +1,101 @@
+<%# app/views/items/edit.html.erb %>
+
+<h1><%= @item.name %> を編集する</h1>
+
+<%# フォーム送信時にエラーがあった場合に表示するエリア %>
+<%= form_with(model: @item, local: true) do |form| %>
+  <% if form.object.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(form.object.errors.count, "error") %> prevented this item from being saved:</h2>
+      <ul>
+        <% form.object.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# アイテム名入力フィールド %>
+  <div class="field">
+    <%= form.label :name, "アイテム名" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <%# カテゴリー選択プルダウン %>
+  <div class="field">
+    <%= form.label :category_id, "カテゴリー" %>
+    <%# Categoryモデルから既存のカテゴリーを選択させる。display_orderでソート。 %>
+    <%= form.collection_select :category_id, Category.all.order(:display_order), :id, :name, prompt: "カテゴリーを選択してください" %>
+  </div>
+
+  <%# ブランド名入力フィールド（新規作成または既存選択） %>
+  <div class="field">
+    <%= form.fields_for :brand do |brand_fields| %>
+      <%= brand_fields.label :name, "ブランド名（新しいブランドは直接入力、既存ブランドはサジェストから選択）" %>
+      <%= brand_fields.text_field :name, list: "existing_brands" %>
+    <% end %>
+    <%# 既存ブランドの候補リスト（datalistはinputとidで紐付ける） %>
+    <datalist id="existing_brands">
+      <% Brand.all.order(:name).each do |brand| %>
+        <option value="<%= brand.name %>">
+      <% end %>
+    </datalist>
+  </div>
+
+  <%# シーズン名入力フィールド（新規作成または既存選択） %>
+  <div class="field">
+    <%= form.fields_for :season do |season_fields| %>
+      <%= season_fields.label :name, "シーズン（新しいシーズンは直接入力、既存シーズンはサジェストから選択）" %>
+      <%= season_fields.text_field :name, list: "existing_seasons" %>
+    <% end %>
+    <%# 既存シーズンの候補リスト %>
+    <datalist id="existing_seasons">
+      <% Season.all.order(:display_order).each do |season| %>
+        <option value="<%= season.name %>">
+      <% end %>
+    </datalist>
+  </div>
+
+  <%# 購入日入力フィールド %>
+  <div class="field">
+    <%= form.label :purchase_date, "購入日" %>
+    <%= form.date_field :purchase_date %> <%# HTML5のdateタイプで日付ピッカーを提供 %>
+  </div>
+
+  <%# 価格入力フィールド %>
+  <div class="field">
+    <%= form.label :price, "価格" %>
+    <%= form.number_field :price %> <%# 数値入力に特化したフィールド %>
+  </div>
+
+  <%# メモ入力フィールド %>
+  <div class="field">
+    <%= form.label :memo, "メモ" %>
+    <%= form.text_area :memo %>
+  </div>
+
+  <%# 写真ファイル選択フィールド（Active Storage用） %>
+  <div class="field">
+    <%= form.label :item_image, "写真ファイルを選択（変更する場合のみ）" %>
+    <%= form.file_field :item_image %>
+    <%# ★現在の画像を表示する部分をシンプルにしました★ %>
+    <% if @item.item_image.attached? %>
+      <div style="margin-top: 10px;">
+        <p>現在の画像:</p>
+        <%# リサイズ処理を外しました。元のサイズで表示されます %>
+        <%= image_tag @item.item_image, class: "current-image-thumbnail" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# 送信ボタン %>
+  <div class="actions">
+    <%= form.submit "アイテムを更新" %>
+  </div>
+<% end %>
+
+<%# 関連リンク %>
+<div class="item-actions">
+  <%= link_to '詳細へ戻る', @item %> |
+  <%= link_to '一覧へ戻る', items_path %>
+</div>

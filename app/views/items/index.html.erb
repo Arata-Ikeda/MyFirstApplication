@@ -1,0 +1,61 @@
+<%# app/views/items/index.html.erb %>
+
+<h1>My Wardrobe - 所持品一覧</h1>
+
+<%= notice %> <%# createアクションで設定したnoticeメッセージを表示 %>
+
+<div class="items-grid">
+  <% @items.each do |item| %>
+    <div class="item-card">
+      <% if item.item_image.attached? %> <%# item_imageが添付されているか確認 %>
+        <%= image_tag item.item_image, alt: item.name, class: "item-image" %> <%# 添付された画像を表示 %>
+      <% else %>
+        <%# 「no_image.png」は「app/assets/images/no_image.png」に置いてください %>
+        <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
+      <% end %>
+      <h2><%= item.name %></h2>
+      <p>ブランド: <%= item.brand&.name %></p> <%# brandが存在しない場合（nilの場合）にエラーにならないように&.を使用 %>
+      <p>カテゴリー: <%= item.category&.name %></p>
+      <p>シーズン: <%= item.season&.name %></p>
+      <p><%= item.memo %></p>
+      <%# 後で詳細ページへのリンクや編集・削除ボタンを追加 %>
+      <%= link_to '詳細を見る', item_path(item) %>
+    </div>
+  <% end %>
+</div>
+
+<%= link_to '新しいアイテムを登録', new_item_path %>
+
+<style>
+  /* ここは一時的なCSSです。後でassets/stylesheetsに移動しましょう */
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  .item-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .item-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .no-image-placeholder {
+    width: 100%;
+    height: 150px; /* 画像の高さに合わせて調整 */
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+</style>

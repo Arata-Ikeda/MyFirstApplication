@@ -1,18 +1,34 @@
-<body>
-  <%= render 'shared/header' %>  
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MyFirstApplication</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
-  <% if notice %>
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-      <%= notice %>
-    </div>
-  <% end %>
-  <% if alert %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-      <%= alert %>
-    </div>
-  <% end %>
+    <%# ↓↓↓ この行が最重要！ ↓↓↓ %>
+    <%= javascript_importmap_tags %>
+    
+    <%# Tailwind CSSなどを使っている場合は、以下の行も必要です %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
 
-  <main>
-    <%= yield %> 
-  </main>
-</body>
+  <body>
+    <%= render 'shared/header' %>
+
+    <% if notice %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>

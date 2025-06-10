@@ -4,6 +4,9 @@ class Item < ApplicationRecord
     belongs_to :brand
     belongs_to :season
 
+    has_many :coordinated_items, dependent: :destroy
+    has_many :coordinates, through: :coordinated_items    
+
     has_one_attached :item_image
 
     accepts_nested_attributes_for :brand
@@ -13,4 +16,5 @@ class Item < ApplicationRecord
     validates :memo, length: { maximum: 100 }
     validates :category_id, presence: true
     validates :item_image, presence: true
+    validates :brand_id, presence: true
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_09_074513) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_10_020134) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -54,6 +54,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_09_074513) do
     t.integer "display_order"
   end
 
+  create_table "coordinated_items", force: :cascade do |t|
+    t.integer "coordinate_id", null: false
+    t.integer "item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["coordinate_id"], name: "index_coordinated_items_on_coordinate_id"
+    t.index ["item_id"], name: "index_coordinated_items_on_item_id"
+  end
+
+  create_table "coordinates", force: :cascade do |t|
+    t.date "worn_on"
+    t.text "memo"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_coordinates_on_user_id"
+  end
+
   create_table "items", force: :cascade do |t|
     t.string "name"
     t.text "memo"
@@ -94,4 +112,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_09_074513) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "coordinated_items", "coordinates"
+  add_foreign_key "coordinated_items", "items"
+  add_foreign_key "coordinates", "users"
 end

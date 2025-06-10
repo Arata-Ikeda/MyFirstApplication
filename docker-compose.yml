@@ -7,6 +7,7 @@ services:
     volumes:
       - .:/rails
       - ./config/credentials:/rails/config/credentials
+      - ./storage:/rails/storage
     ports:
       - "3000:3000"
     environment:

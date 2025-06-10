@@ -21,7 +21,6 @@
       <% if item.item_image.attached? %> <%# item_imageが添付されているか確認 %>
         <%= image_tag item.item_image, alt: item.name, class: "item-image" %> <%# 添付された画像を表示 %>
       <% else %>
-        <%# 「no_image.png」は「app/assets/images/no_image.png」に置いてください %>
         <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
       <% end %>
       <h2><%= item.name %></h2>

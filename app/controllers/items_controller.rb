@@ -1,7 +1,11 @@
 # app/controllers/items_controller.rb
 class ItemsController < ApplicationController
   def index
-    @items = Item.all.includes(:category, :brand, :season).order(created_at: :desc)
+    if params[:category_id].present?
+      @items = Item.where(category_id: params[:category_id]).includes(:category, :brand, :season).order(created_at: :desc)
+    else
+      @items = Item.all.includes(:category, :brand, :season).order(created_at: :desc)
+    end
   end
 
   def new

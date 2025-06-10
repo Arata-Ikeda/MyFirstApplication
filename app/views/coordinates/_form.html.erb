@@ -1,0 +1,32 @@
+<%= form_with(model: @coordinate) do |f| %>
+
+  <div class="form-group">
+    <%= f.label :worn_on, '着用日' %>
+    <%= f.date_field :worn_on %>
+  </div>
+
+  <%# ↓このブロックを追記 %>
+  <div class="form-group">
+    <%= f.label :coordinate_image, 'コーディネート写真' %>
+    <%= f.file_field :coordinate_image %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :memo, 'メモ' %>
+    <%= f.text_area :memo, rows: 5, placeholder: 'その日の出来事や、コーデのポイントなど' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :item_ids, '着用アイテムを選ぶ' %><br>
+    <%= f.collection_check_boxes :item_ids, @items, :id, :name do |b| %>
+      <div class="form-check form-check-inline">
+        <%= b.check_box(class: 'form-check-input') %>
+        <%= b.label(class: 'form-check-label') %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'コーディネートを登録する' %>
+  </div>
+<% end %>

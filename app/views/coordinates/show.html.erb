@@ -1,0 +1,66 @@
+<%# app/views/coordinates/show.html.erb %>
+
+<%# 1. メインのコーディネート写真 %>
+<div style="margin-bottom: 20px;">
+  <% if @coordinate.coordinate_image.attached? %>
+    <%= image_tag @coordinate.coordinate_image.variant(resize_to_limit: [500, 500]) %>
+  <% else %>
+    <div style="width: 500px; height: 500px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+      （写真は登録されていません）
+    </div>
+  <% end %>
+</div>
+
+<%# 2. 日付 %>
+<h2>
+  <%= (@coordinate.worn_on ? @coordinate.worn_on.strftime('%Y/%m/%d') : '日付未登録') %>
+</h2>
+
+<%# 3. メモ %>
+<p>
+  <%= simple_format(@coordinate.memo) %>
+</p>
+
+<hr>
+
+<%# 4. 着用ブランド一覧 %>
+<h3>着用ブランド</h3>
+<% if @grouped_items.any? %>
+  <% @grouped_items.each do |category, items| %>
+    <h4><%= category&.name || 'カテゴリなし' %></h4>
+    <ul style="list-style: none; padding-left: 10px;">
+      <% items.each do |item| %>
+        <li>
+          <%= item.brand&.name || 'ブランドなし' %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% else %>
+  <p>着用アイテムは登録されていません。</p>
+<% end %>
+
+<%# 5. 着用アイテムの写真一覧 %>
+<h3 style="margin-top: 20px;">アイテム写真一覧</h3>
+<% if @coordinate.items.any? %>
+  <div class="items-grid">
+    <% @coordinate.items.each do |item| %>
+      <div class="item-card" style="width: 150px;">
+        <%= link_to item_path(item) do %>
+          <% if item.item_image.attached? %>
+            <%= image_tag item.item_image.variant(resize_to_limit: [150, 150]) %>
+          <% else %>
+            <%= image_tag "no_image_square.jpg" %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%# 上でメッセージは出しているので、ここでは何も表示しない %>
+<% end %>
+
+<hr>
+<%= link_to '一覧に戻る', coordinates_path %>
+<%= link_to 'このコーデを編集', edit_coordinate_path(@coordinate) %>
+<%= link_to 'このコーデを削除', @coordinate, data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>

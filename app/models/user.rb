@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_one_attached :icon
+  has_many :coordinates
+  has_many :items
 
   validates :name, presence: true, uniqueness: true, length: { maximum: 15 }
   validates :icon, presence: true

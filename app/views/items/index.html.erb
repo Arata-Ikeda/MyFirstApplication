@@ -2,6 +2,17 @@
 
 <h1>My Wardrobe - 所持品一覧</h1>
 
+<div style="margin-bottom: 20px;">
+  <strong>カテゴリーで絞り込む:</strong>
+  <%= link_to "すべて", items_path %> |
+
+  <%# Categoryモデルに登録されている全てのカテゴリーを取得して、それぞれリンクを作成します %>
+  <% Category.all.each do |category| %>
+    <%= link_to category.name, items_path(category_id: category.id) %> |
+  <% end %>
+</div>
+<hr>
+
 <%= notice %> <%# createアクションで設定したnoticeメッセージを表示 %>
 
 <div class="items-grid">

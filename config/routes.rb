@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  #wish/index"
+  #get "wish/new"
+  #get "wish/create"
+  #get "wish/destroy"
   get "coordinates/index"
   get "coordinates/new"
   get "coordinates/show"
@@ -7,6 +11,7 @@ Rails.application.routes.draw do
 
   resources :items
   resources :coordinates
+  resources :wishes
   
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')

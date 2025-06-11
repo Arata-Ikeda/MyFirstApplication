@@ -1,56 +1,65 @@
 # app/controllers/items_controller.rb
 class ItemsController < ApplicationController
   def index
-    if params[:category_id].present?
-      @items = Item.where(category_id: params[:category_id]).includes(:category, :brand, :season).order(created_at: :desc)
-    else
-      @items = Item.all.includes(:category, :brand, :season).order(created_at: :desc)
-    end
+  # ベースとなるクエリを準備（ログインユーザーの、所持品だけ）
+  items_relation = current_user.items.status_owned.includes(:brand, :season, :category).order(created_at: :desc)
+
+  if params[:category_id].present?
+    items_relation = items_relation.where(category_id: params[:category_id])
   end
+
+  @items = items_relation.includes(:category, :brand, :season).order(created_at: :desc)
+end
 
   def new
     @item = Item.new
-    @item.build_brand # これも忘れずに！newアクションでフォームが正しく初期化されるように
-    @item.build_season # これも忘れずに！
+    @item.build_brand 
+    @item.build_season 
   end
 
   def create
-    @item = Item.new(item_params)
-    @item.user = current_user 
+  # item_paramsから、ネストした属性を除外してインスタンスを初期化
+    @item = Item.new(item_params.except(:brand_attributes, :season_attributes))
+    @item.user = current_user
+    @item.status = :owned 
 
-    if brand_name = params[:item][:brand_attributes][:name].presence
+    # digを使って安全にブランド名を取得
+    if brand_name = params.dig(:item, :brand_attributes, :name).presence
       @item.brand = Brand.find_or_create_by(name: brand_name)
     end
 
-    if season_name = params[:item][:season_attributes][:name].presence
+    # digを使って安全にシーズン名を取得
+    if season_name = params.dig(:item, :season_attributes, :name).presence
       @item.season = Season.find_or_create_by(name: season_name)
     end
 
     if @item.save
-        redirect_to items_path, notice: "アイテムが正常に作成されました。"
+      redirect_to items_path, notice: 'アイテムが正常に作成されました。'
     else
-        render :new, status: :unprocessable_entity
+      @item.build_brand unless @item.brand
+      @item.build_season unless @item.season
+      render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    @item = Item.includes(:category, :brand, :season).find(params[:id])
+    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
   end
 
   def edit
-    @item = Item.includes(:category, :brand, :season).find(params[:id])
+    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
     @item.build_brand unless @item.brand # brandが存在しない場合は新規作成用のフォームを表示
     @item.build_season unless @item.season # seasonが存在しない場合は新規作成用のフォームを表示
   end
 
   def update
-    @item = Item.includes(:category, :brand, :season).find(params[:id])
+    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
     
-    if brand_name = params[:item][:brand_attributes][:name].presence
+    if brand_name = params.dig(:item, :brand_attributes, :name).presence
       @item.brand = Brand.find_or_create_by(name: brand_name)
     end
 
-    if season_name = params[:item][:season_attributes][:name].presence
+    if season_name = params.dig(:item, :season_attributes, :name).presence
       @item.season = Season.find_or_create_by(name: season_name)
     end
 

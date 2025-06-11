@@ -1,0 +1,60 @@
+<h1><%= @wish_item.name %> の詳細</h1>
+
+<div class="item-details">
+  <% if @wish_item.item_image.attached? %>
+    <%= image_tag @wish_item.item_image.variant(resize_to_limit: [300, 300]), alt: @wish_item.name, class: "detail-image" %>
+  <% else %>
+    <%= image_tag "no_image_square.jpg", alt: "No Image", class: "detail-image" %>
+  <% end %>
+
+  <p><strong>アイテム名:</strong> <%= @wish_item.name %></p>
+  <p><strong>ブランド:</strong> <%= @wish_item.brand&.name || '未登録' %></p>
+  <p><strong>カテゴリー:</strong> <%= @wish_item.category&.name || '未登録' %></p>
+  <p><strong>シーズン:</strong> <%= @wish_item.season&.name || '未登録' %></p>
+  
+  <%# 欲しいものなので「価格」を表示します %>
+  <% if @wish_item.price.present? %>
+    <p><strong>価格:</strong> <%= number_to_currency(@wish_item.price, unit: "円", precision: 0) %></p>
+  <% end %>
+
+  <p><strong>メモ:</strong> <%= simple_format(@wish_item.memo) %></p>
+</div>
+
+<div class="item-actions">
+  <%= link_to '編集する', edit_wish_path(@wish_item) %> |
+  <%= link_to '欲しいもの一覧へ戻る', wishes_path %> |
+  <%= link_to 'このアイテムを削除する', wish_path(@wish_item), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
+</div>
+
+<%# Itemのshowページと同じスタイルを適用 %>
+<style>
+  .item-details {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  .detail-image {
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .item-details p {
+    margin-bottom: 8px;
+  }
+  .item-actions {
+    margin-top: 20px;
+  }
+  .item-actions a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;
+  }
+  .item-actions a:hover {
+    text-decoration: underline;
+  }
+</style>

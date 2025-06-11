@@ -1,0 +1,72 @@
+<%= form_with(
+      model: wish_item_object,
+      url: wish_item_object.new_record? ? wishes_path : wish_path(wish_item_object),
+      method: wish_item_object.new_record? ? :post : :patch
+    ) do |form| %>
+  <% if @wish_item.errors.any? %>
+    <div id="error_explanation" style="color: red; border: 2px solid red; padding: 10px; margin-bottom: 20px;">
+      <h2><%= @wish_item.errors.count %>件のエラーにより、更新できませんでした:</h2>
+      <ul>
+        <% @wish_item.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name, '欲しいアイテム名' %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :item_image, '参考画像' %>
+    <% if wish_item_object.item_image.attached? %>
+      <%= image_tag wish_item_object.item_image.variant(resize_to_limit: [100, 100]) %>
+    <% end %>
+    <%= form.file_field :item_image %>
+  </div>
+
+  <%# ... カテゴリー、価格、ブランド、シーズン、メモの入力欄は、元のフォームからコピーして、@wish_itemをwish_item_objectに書き換える ... %>
+  <div class="field">
+    <%= form.label :category_id, 'カテゴリー' %>
+    <%= form.collection_select :category_id, Category.all.order(:name), :id, :name, { prompt: '選択してください' } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :price, '価格（円）' %>
+    <%= form.number_field :price, placeholder: '例: 25000' %>
+  </div>
+
+  <div class="field">
+    <%= form.fields_for :brand do |brand_fields| %>
+      <%= brand_fields.label :name, "ブランド名" %>
+      <%= brand_fields.text_field :name, list: "existing_brands" %>
+    <% end %>
+    <datalist id="existing_brands">
+      <% Brand.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
+    </datalist>
+  </div>
+  
+  <%# ...シーズンとメモも同様... %>
+  <div class="field">
+    <%= form.fields_for :season do |season_fields| %>
+      <%= season_fields.label :name, "シーズン" %>
+      <%= season_fields.text_field :name, list: "existing_seasons" %>
+    <% end %>
+    <datalist id="existing_seasons">
+      <% Season.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
+    </datalist>
+  </div>
+
+  <div class="field">
+    <%= form.label :memo, 'メモ' %>
+    <%= form.text_area :memo, rows: 4 %>
+  </div>
+
+
+  <div class="actions">
+    <%# ボタンの文字を、新規作成か更新かで動的に変える %>
+    <%= form.submit wish_item_object.new_record? ? "欲しいものリストに追加" : "更新する" %>
+  </div>
+<% end %>

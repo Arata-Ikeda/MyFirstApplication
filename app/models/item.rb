@@ -9,6 +9,8 @@ class Item < ApplicationRecord
 
     has_one_attached :item_image
 
+    enum :status, { wish: 0, owned: 1 }, prefix: true
+
     accepts_nested_attributes_for :brand
     accepts_nested_attributes_for :season
 
@@ -16,5 +18,5 @@ class Item < ApplicationRecord
     validates :memo, length: { maximum: 100 }
     validates :category_id, presence: true
     validates :item_image, presence: true
-    validates :brand_id, presence: true
+    validates :brand, presence: true
 end

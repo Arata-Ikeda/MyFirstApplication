@@ -1,21 +1,22 @@
 Rails.application.routes.draw do
-  #wish/index"
-  #get "wish/new"
-  #get "wish/create"
-  #get "wish/destroy"
-  get "coordinates/index"
-  get "coordinates/new"
-  get "coordinates/show"
-  get "home/index"
   root to: "home#index" 
 
   resources :items
   resources :coordinates
-  resources :wishes
+  resources :wishes do
+    member do
+      patch :purchased_confirm
+    end
+
+    collection do
+      get :purchased, to: 'wishes#purchased_index'
+    end
+  end
   
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')
   post 'logout', to: 'sessions#destroy', as: 'logout'
+  get 'login', to: 'sessions#new', as: :login
 
   get 'register', to: 'registrations#new', as: :new_user_registration
   post 'register', to: 'registrations#create', as: :user_registration

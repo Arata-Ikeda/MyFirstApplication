@@ -1,4 +1,5 @@
 class WishesController < ApplicationController
+  before_action :require_login
   def index
     @wish_items = current_user.items.status_wish.includes(:brand, :season, :category).order(created_at: :desc)
   end
@@ -66,6 +67,19 @@ class WishesController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   end
+  def purchased_confirm
+    @wish_item = current_user.items.status_wish.find(params[:id])
+    if @wish_item.update(purchase_date: params[:item][:purchase_date], status: :owned, promoted_to_owned_at: Time.current)
+      redirect_to items_path, notice: '購入済みにしました'
+    else
+      redirect_to wish_path(@wish_item), alert: '更新に失敗しました'
+    end
+  end
+
+  def purchased_index
+    # ステータスがowned、かつpromoted_to_owned_atがnilでないものだけを抽出
+    @purchased_items = current_user.items.where(status: Item.statuses[:owned]).where.not(promoted_to_owned_at: nil).includes(:brand, :season, :category).order(purchase_date: :desc)
+  end
 
   private
   def item_params
@@ -78,5 +92,11 @@ class WishesController < ApplicationController
       brand_attributes: [:id, :name],
       season_attributes: [:id, :name]
     )
+  end
+
+  def require_login
+    unless current_user
+      redirect_to login_path, alert: 'ログインが必要です。'
+    end
   end
 end

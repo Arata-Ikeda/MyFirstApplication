@@ -1,18 +1,23 @@
 <header class="w-full text-gray-700 bg-white border-b border-gray-100 shadow-sm body-font">
   <div class="container flex items-center justify-between p-6 mx-auto">
+    <%= link_to "StyleSheet", root_path, class: "flex items-center font-bold text-gray-900 title-font" %>
     <nav class="flex items-center">
       <% if current_user %>
-        <div class="flex items-center space-x-4">
+        <!-- ユーザーアイコンと名前を表示 -->
+        <div class="flex items-center mr-4">
           <% if current_user.icon.attached? %>
-            <%= image_tag url_for(current_user.icon.variant(resize_to_fill: [40, 40])), alt: 'アイコン', class: 'w-10 h-10 rounded-full border' %>
-          <% else %>
-            <%= image_tag 'icon.png', alt: 'デフォルトアイコン', class: 'w-10 h-10 rounded-full border' %>
+            <%= image_tag current_user.icon, alt: current_user.name, style: "width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-right: 0.5rem; border: 1.5px solid #ccc; box-shadow: 0 1px 2px rgba(0,0,0,0.08);" %>
+          <% elsif current_user.icon_url.present? %>
+            <%= image_tag current_user.icon_url, alt: current_user.name, style: "width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-right: 0.5rem; border: 1.5px solid #ccc; box-shadow: 0 1px 2px rgba(0,0,0,0.08);" %>
           <% end %>
-          <span class="font-bold"><%= current_user.name %></span>
-          <%= button_to "ログアウト", logout_path, method: :post, class: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" %>
+          <span class="font-semibold text-gray-800"><%= current_user.name %></span>
         </div>
+        <%= link_to "Wardrobes", items_path, class: "ml-4" %>
+        <%= link_to "Coordinates", coordinates_path, class: "ml-4" %>
+        <%= link_to "Wishlist", wishes_path, class: "ml-4" %>
+        <%= link_to "ログアウト", logout_path, data: { turbo_method: :post }, class: "ml-4" %>
       <% else %>
-        <%= link_to "Googleでログイン", "/auth/google_oauth2", class: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" %>
+        <%= link_to "ログイン", login_path, class: "ml-4" %>
       <% end %>
     </nav>
   </div>

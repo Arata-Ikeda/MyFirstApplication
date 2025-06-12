@@ -1,0 +1,23 @@
+<h1>購入済みアイテム一覧</h1>
+
+<% if @purchased_items.empty? %>
+  <p>まだ購入済みのアイテムはありません。</p>
+<% else %>
+  <div class="purchased-items-grid"> <%# 購入済みアイテムをグリッド表示するためのコンテナ %>
+    <% @purchased_items.each do |item| %>
+      <div class="purchased-item-card"> <%# 各アイテムのカード %>
+        <h3><%= link_to item.name, item_path(item) %></h3> <%# アイテム名をクリックで詳細へ %>
+        <% if item.item_image.attached? %>
+          <%= image_tag item.item_image.variant(resize_to_limit: [200, 200]), alt: item.name, class: "item-image" %>
+        <% else %>
+          <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
+        <% end %>
+        <p><strong>購入日:</strong> <%= item.promoted_to_owned_at.present? ? l(item.promoted_to_owned_at, format: :long) : '未登録' %></p> <%# 購入日を表示 %>
+        <p>ブランド: <%= item.brand&.name || '未登録' %></p>
+        <%# 必要に応じて他の情報もここに追加 %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<p><%= link_to '欲しいものリストに戻る', wishes_path %></p>

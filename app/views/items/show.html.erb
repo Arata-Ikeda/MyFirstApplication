@@ -21,9 +21,13 @@
 </div>
 
 <div class="item-actions">
-  <%= link_to '編集する', edit_item_path(@item) %> |
-  <%= link_to '一覧へ戻る', items_path %> |
-  <%= link_to 'このアイテムを削除する', item_path(@item), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
+  <% unless request.referer&.include?(purchased_wishes_path) %>
+    <%= link_to '編集する', edit_item_path(@item) %> |
+    <%= link_to '一覧へ戻る', items_path %> |
+    <%= link_to 'このアイテムを削除する', item_path(@item), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
+  <% else %>
+    <%= link_to '一覧へ戻る', items_path %>
+  <% end %>
 </div>
 
 <style>

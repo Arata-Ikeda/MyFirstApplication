@@ -45,6 +45,7 @@
 <% if @coordinate.items.any? %>
   <div class="items-grid">
     <% @coordinate.items.each do |item| %>
+      <% next if item.nil? || !Item.exists?(item.id) %>
       <div class="item-card" style="width: 150px;">
         <%= link_to item_path(item) do %>
           <% if item.item_image.attached? %>

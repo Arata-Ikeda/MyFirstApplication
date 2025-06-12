@@ -1,0 +1,81 @@
+.item-details {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+.detail-image {
+  max-width: 300px;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.item-details p {
+  margin-bottom: 8px;
+}
+.item-actions {
+  margin-top: 20px;
+}
+.item-actions a {
+  margin-right: 15px;
+  text-decoration: none;
+  color: #007bff;
+}
+.item-actions a:hover {
+  text-decoration: underline;
+}
+
+.purchased-items-grid {
+  display: grid; /* グリッドレイアウトを有効にする */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* アイテムを自動で並べる */
+  gap: 20px; /* アイテム間の余白 */
+  margin-top: 30px;
+}
+
+.purchased-item-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-5px); /* ホバーで少し浮き上がる */
+  }
+
+  .item-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  h3 a {
+    text-decoration: none;
+    color: #333;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+
+  p {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 5px;
+  }
+
+  strong {
+    color: #333;
+  }
+}

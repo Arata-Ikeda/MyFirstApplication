@@ -24,37 +24,34 @@
   <%= link_to '編集する', edit_wish_path(@wish_item) %> |
   <%= link_to '欲しいもの一覧へ戻る', wishes_path %> |
   <%= link_to 'このアイテムを削除する', wish_path(@wish_item), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
+  <%# 購入済みにするボタン %>
+  <button type="button" class="btn btn-primary purchase-button"
+          data-bs-toggle="modal" data-bs-target="#purchaseModal"
+          data-item-id="<%= @wish_item.id %>">
+    購入済みにする
+  </button>
 </div>
 
-<%# Itemのshowページと同じスタイルを適用 %>
-<style>
-  .item-details {
-    margin: 20px 0;
-    padding: 20px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  .detail-image {
-    max-width: 300px;
-    height: auto;
-    display: block;
-    margin: 0 auto 20px;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  .item-details p {
-    margin-bottom: 8px;
-  }
-  .item-actions {
-    margin-top: 20px;
-  }
-  .item-actions a {
-    margin-right: 15px;
-    text-decoration: none;
-    color: #007bff;
-  }
-  .item-actions a:hover {
-    text-decoration: underline;
-  }
-</style>
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="purchaseModalLabel">購入日を入力</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: @wish_item, url: purchased_confirm_wish_path(@wish_item), method: :patch, local: true) do |form| %>
+          <div class="mb-3">
+            <%= form.label :purchase_date, "購入日", class: "form-label" %>
+            <%= form.date_field :purchase_date, class: "form-control", required: true %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+            <%= form.submit "決定", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+

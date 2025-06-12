@@ -67,3 +67,5 @@ end
 gem 'omniauth-google-oauth2'
 gem 'tailwindcss-rails'
 gem "image_processing", "~> 1.2"
+gem 'bootstrap', '~> 5.x' 
+gem 'popper_js' 

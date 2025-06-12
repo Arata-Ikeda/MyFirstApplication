@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
     user = User.find_by(google_id: auth_hash['uid'])
     if user
       log_in user
-      redirect_to root_path
+      redirect_to coordinates_path, notice: 'ログインしました'
     else
       # 新規Googleアカウントの場合は登録画面へ
       session[:google_auth] = {
@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
     log_out
     session.delete(:profile_image_url)
     session.delete(:google_auth)
-    redirect_to root_path
+    redirect_to root_path, notice: 'ログアウトしました'
   end
 
   private

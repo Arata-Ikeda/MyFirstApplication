@@ -1,5 +1,9 @@
 # app/controllers/items_controller.rb
 class ItemsController < ApplicationController
+  before_action :require_login
+  before_action :set_item, only: [:show, :edit, :update, :destroy]
+
+  # ログインユーザーの所持品を表示
   def index
   # ベースとなるクエリを準備（ログインユーザーの、所持品だけ）
   items_relation = current_user.items.status_owned.includes(:brand, :season, :category).order(created_at: :desc)
@@ -43,18 +47,14 @@ end
   end
 
   def show
-    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
   end
 
   def edit
-    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
     @item.build_brand unless @item.brand # brandが存在しない場合は新規作成用のフォームを表示
     @item.build_season unless @item.season # seasonが存在しない場合は新規作成用のフォームを表示
   end
 
   def update
-    @item = current_user.items.status_owned.includes(:category, :brand, :season).find(params[:id])
-    
     if brand_name = params.dig(:item, :brand_attributes, :name).presence
       @item.brand = Brand.find_or_create_by(name: brand_name)
     end
@@ -71,7 +71,6 @@ end
   end
 
   def destroy
-    @item = Item.find(params[:id])
     @item.destroy # データベースからアイテムを削除する
     redirect_to items_path, notice: 'アイテムが正常に削除されました。'
   end
@@ -89,5 +88,13 @@ end
       brand_attributes: [:name],
       season_attributes: [:name]
     )
+  end
+
+  def set_item
+    @item = current_user.items.status_owned.includes(:category, :brand, :season).find_by(id: params[:id])
+    unless @item
+      redirect_to items_path, alert: '指定されたアイテムが見つかりません。'
+      return
+    end
   end
 end

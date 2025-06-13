@@ -3,9 +3,8 @@ class ApplicationController < ActionController::Base
   # before_action :require_login
 
   def require_login
-    return if current_user
-
-    flash[:danger] = 'Googleログインが必要です'
-    redirect_to root_path
+    unless current_user
+      redirect_to login_path, alert: 'ログインが必要です。'
+    end
   end
 end

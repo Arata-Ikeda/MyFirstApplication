@@ -1,5 +1,6 @@
 class WishesController < ApplicationController
   before_action :require_login
+  before_action :set_wish_item, only: [:show, :edit, :update, :destroy, :purchased_confirm]
   def index
     @wish_items = current_user.items.status_wish.includes(:brand, :season, :category).order(created_at: :desc)
   end
@@ -34,23 +35,19 @@ class WishesController < ApplicationController
   end
   
   def destroy
-    @wish_item = current_user.items.status_wish.find(params[:id])
     @wish_item.destroy
     redirect_to wishes_path, notice: 'My Wish Listからアイテムを削除しました。', status: :see_other
   end
 
   def show
-    @wish_item = current_user.items.status_wish.includes(:category, :brand, :season).find(params[:id])
   end
 
   def edit
-    @wish_item = current_user.items.status_wish.includes(:category, :brand, :season).find(params[:id])
     @wish_item.build_brand unless @wish_item.brand
     @wish_item.build_season unless @wish_item.season
   end
 
   def update
-    @wish_item = current_user.items.status_wish.includes(:category, :brand, :season).find(params[:id])
     if brand_name = params.dig(:item, :brand_attributes, :name).presence
       @wish_item.brand = Brand.find_or_create_by(name: brand_name)
     end
@@ -68,7 +65,6 @@ class WishesController < ApplicationController
     end
   end
   def purchased_confirm
-    @wish_item = current_user.items.status_wish.find(params[:id])
     if @wish_item.update(purchase_date: params[:item][:purchase_date], status: :owned, promoted_to_owned_at: Time.current)
       redirect_to items_path, notice: '購入済みにしました'
     else
@@ -94,9 +90,10 @@ class WishesController < ApplicationController
     )
   end
 
-  def require_login
-    unless current_user
-      redirect_to login_path, alert: 'ログインが必要です。'
+  def set_wish_item
+    @wish_item = current_user.items.status_wish.includes(:category, :brand, :season).find(params[:id])
+    unless @wish_item
+      redirect_to wishes_path, alert: '指定されたアイテムが見つかりません。'
     end
   end
 end

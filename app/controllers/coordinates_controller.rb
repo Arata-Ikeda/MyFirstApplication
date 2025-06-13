@@ -1,4 +1,6 @@
 class CoordinatesController < ApplicationController
+  before_action :require_login
+  before_action :set_coordinate, only: [:show, :edit, :update, :destroy]
 
   def index
     @coordinates = current_user.coordinates.order(worn_on: :desc)
@@ -20,17 +22,14 @@ class CoordinatesController < ApplicationController
   end
 
   def show
-    @coordinate = Coordinate.find(params[:id])
     @grouped_items = @coordinate.items.includes(:category, :brand).group_by(&:category)
   end
 
   def edit
-    @coordinate = Coordinate.find(params[:id])
     @items = current_user.items.order(created_at: :desc)
   end
 
   def update
-    @coordinate = Coordinate.find(params[:id])
     if @coordinate.update(coordinate_params)
       redirect_to @coordinate, notice: 'コーディネートを更新しました。'
     else
@@ -48,5 +47,13 @@ class CoordinatesController < ApplicationController
 
     def coordinate_params
       params.require(:coordinate).permit(:worn_on, :memo, :coordinate_image, item_ids: [])
+    end
+
+    def set_coordinate
+      @coordinate = current_user.coordinates.find_by(id: params[:id])
+      unless @coordinate
+        redirect_to coordinates_path, alert: '他のユーザーのコーディネートは表示できません。'
+        return
+      end
     end
 end

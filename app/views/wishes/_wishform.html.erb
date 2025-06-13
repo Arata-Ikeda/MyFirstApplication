@@ -21,7 +21,7 @@
 
   <div class="field">
     <%= form.label :item_image, '参考画像' %>
-    <% if wish_item_object.item_image.attached? %>
+    <% if wish_item_object.persisted? && wish_item_object.item_image.attached? %>
       <%= image_tag wish_item_object.item_image.variant(resize_to_limit: [100, 100]) %>
     <% end %>
     <%= form.file_field :item_image %>

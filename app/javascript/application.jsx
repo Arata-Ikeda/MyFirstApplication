@@ -5,6 +5,7 @@ import Header from './components/Header';
 import ItemGrid from './components/ItemGrid';
 import CoordinateGrid from './components/CoordinateGrid';
 import AddButton from './components/AddButton';
+import HomePage from './components/HomePage';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Header component
@@ -40,6 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
       root.render(<CoordinateGrid {...props} />);
     } catch (error) {
       console.error('Error rendering CoordinateGrid:', error);
+    }
+  }
+
+  // HomePage component
+  const homePageContainer = document.getElementById('home-page');
+  if (homePageContainer) {
+    try {
+      const props = homePageContainer.dataset.props ? JSON.parse(homePageContainer.dataset.props) : {};
+      const root = createRoot(homePageContainer);
+      root.render(<HomePage {...props} />);
+    } catch (error) {
+      console.error('Error rendering HomePage:', error);
     }
   }
 

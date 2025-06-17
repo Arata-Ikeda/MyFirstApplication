@@ -42,8 +42,8 @@ const Header = ({ isLoggedIn, currentUser, paths, csrfToken }) => {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ部分 */}
           <div className="flex items-center">
-            <a href={paths.root} className="text-xl font-semibold text-gray-900 tracking-tight hover:text-gray-700 transition-colors">
-              StyleAssist 
+            <a href={paths.root} className="text-xl font-semibold tracking-tight transition-colors">
+              Style<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Assist</span>
             </a>
           </div>
 
@@ -66,7 +66,7 @@ const Header = ({ isLoggedIn, currentUser, paths, csrfToken }) => {
 
                 {/* プロフィールセクション */}
                 <div className="flex items-center space-x-4 pl-6 border-l border-gray-200">
-                  <div className="flex items-center space-x-3">
+                  <a href={paths.user} className="flex items-center space-x-3 hover:opacity-75 transition-opacity">
                     {currentUser.iconUrl && (
                       <img
                         src={currentUser.iconUrl}
@@ -77,7 +77,7 @@ const Header = ({ isLoggedIn, currentUser, paths, csrfToken }) => {
                     <span className="hidden sm:block text-sm font-medium text-gray-900">
                       {currentUser.name}
                     </span>
-                  </div>
+                  </a>
                   <LogoutLink path={paths.logout} csrfToken={csrfToken} />
                 </div>
               </div>

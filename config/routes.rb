@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       get :purchased, to: 'wishes#purchased_index'
     end
   end
+
+  resources :users, only: [:show, :edit, :update]
   
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')

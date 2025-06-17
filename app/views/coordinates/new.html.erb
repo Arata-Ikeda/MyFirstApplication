@@ -1,2 +1,130 @@
-<h1>新しいコーディネートを記録する</h1>
-<%= render 'form' %>
+<%# app/views/coordinates/new.html.erb %>
+
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        新しいコーディネートを記録
+      </h1>
+      <p class="text-gray-600">
+        今日のコーディネートを記録して、スタイルの履歴を残しましょう
+      </p>
+    </div>
+
+    <!-- フォームカード -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-8">
+        <%= form_with(model: @coordinate, class: "space-y-6") do |f| %>
+          <!-- エラー表示 -->
+          <% if @coordinate.errors.any? %>
+            <div class="rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    入力内容に問題があります
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                      <% @coordinate.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- 着用日 -->
+          <div>
+            <%= f.label :worn_on, "着用日", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.date_field :worn_on, value: Date.current, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm" %>
+          </div>
+
+          <!-- コーディネート写真 -->
+          <div>
+            <%= f.label :coordinate_image, "コーディネート写真", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+              <div class="space-y-1 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="text-sm text-gray-600">
+                  <%= f.file_field :coordinate_image, class: "sr-only", id: "coordinate-file-upload" %>
+                  <label for="coordinate-file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-gray-600 hover:text-gray-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gray-500">
+                    <span>コーディネート写真をアップロード</span>
+                  </label>
+                  <p class="pl-1">またはドラッグ&ドロップ</p>
+                </div>
+                <p class="text-xs text-gray-500">全身写真や鏡越しの写真など</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 着用アイテム選択 -->
+          <div>
+            <%= f.label :item_ids, "着用アイテム", class: "block text-sm font-medium text-gray-700 mb-3" %>
+            <% if @items.any? %>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <%= f.collection_check_boxes :item_ids, @items, :id, :name do |b| %>
+                  <label class="relative flex items-start p-3 border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 transition-colors">
+                    <%= b.check_box(class: "sr-only peer") %>
+                    <div class="flex items-center h-5">
+                      <div class="w-4 h-4 border border-gray-300 rounded peer-checked:bg-gray-900 peer-checked:border-gray-900 flex items-center justify-center">
+                        <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="ml-3">
+                      <span class="text-sm font-medium text-gray-900">
+                        <%= b.object.name %>
+                      </span>
+                      <% if b.object.brand %>
+                        <p class="text-xs text-gray-500">
+                          <%= b.object.brand.name %>
+                        </p>
+                      <% end %>
+                    </div>
+                  </label>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-sm text-gray-500">
+                アイテムが登録されていません。
+                <%= link_to "まずはアイテムを登録", new_item_path, class: "text-gray-900 font-medium hover:text-gray-700" %>
+                してください。
+              </p>
+            <% end %>
+          </div>
+
+          <!-- メモ -->
+          <div>
+            <%= f.label :memo, "メモ", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_area :memo, rows: 4, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "その日の出来事や、コーディネートのポイント、着心地などを記録してください" %>
+          </div>
+
+          <!-- 送信ボタン -->
+          <div class="flex justify-end space-x-3">
+            <%= link_to "キャンセル", coordinates_path, class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+            <%= f.submit "コーディネートを記録", class: "bg-gray-900 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 戻るボタン -->
+    <div class="mt-6">
+      <%= link_to coordinates_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        コーディネート一覧に戻る
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,24 +1,46 @@
-<h1>購入済みアイテム一覧</h1>
+<%# app/views/wishes/purchased.html.erb %>
 
-<% if @purchased_items.empty? %>
-  <p>まだ購入済みのアイテムはありません。</p>
-  <p><%= link_to '欲しいものリストに戻る', wishes_path %></p>
-<% else %>
-  <div class="purchased-items-grid"> <%# 購入済みアイテムをグリッド表示するためのコンテナ %>
-    <% @purchased_items.each do |item| %>
-      <div class="purchased-item-card"> <%# 各アイテムのカード %>
-        <h3><%= link_to item.name, item_path(item) %></h3> <%# アイテム名をクリックで詳細へ %>
-        <% if item.item_image.attached? %>
-          <%= image_tag item.item_image.variant(resize_to_limit: [200, 200]), alt: item.name, class: "item-image" %>
-        <% else %>
-          <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
-        <% end %>
-        <p><strong>購入日:</strong> <%= l item.promoted_to_owned_at, format: :long %></p> <%# 購入日を表示 %>
-        <p>ブランド: <%= item.brand&.name || '未登録' %></p>
-        <%# 必要に応じて他の情報もここに追加 %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+<%
+  # Reactコンポーネントに渡すデータを準備
+  purchased_items_data = @purchased_items.map do |item|
+    {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.item_image.attached? ? url_for(item.item_image.variant(resize_to_limit: [300, 300])) : nil,
+      brand: {
+        id: item.brand&.id,
+        name: item.brand&.name || "未設定"
+      },
+      category: {
+        id: item.category&.id,
+        name: item.category&.name || "未設定"
+      },
+      season: {
+        id: item.season&.id,
+        name: item.season&.name || "未設定"
+      },
+      memo: item.memo,
+      showPath: item_path(item),
+      purchasedDate: item.promoted_to_owned_at&.strftime('%Y/%m/%d')
+    }
+  end
 
-<p><%= link_to '欲しいものリストに戻る', wishes_path %></p>
+  item_grid_props = {
+    items: purchased_items_data,
+    categories: [],  # 購入済みアイテムではカテゴリフィルターを使わない
+    type: 'purchased'  # 新しいタイプを追加
+  }
+%>
+
+<%# Reactコンポーネントのマウントポイント %>
+<div id="item-grid-container" data-props="<%= item_grid_props.to_json %>"></div>
+
+<%# ナビゲーションボタン %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+  <%= link_to wishes_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors" do %>
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    ウィッシュリストに戻る
+  <% end %>
+</div>

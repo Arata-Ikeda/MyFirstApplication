@@ -1,23 +1,41 @@
-<h1>購入済みアイテム一覧</h1>
+<%
+  # Reactコンポーネントに渡すデータを準備
+  items_data = @purchased_items.map do |item|
+    {
+      id: item.id,
+      name: item.name,
+      brand: item.brand&.name,
+      category: item.category&.name,
+      season: item.season&.name,
+      price: item.price,
+      purchaseDate: item.promoted_to_owned_at&.strftime('%Y年%m月%d日'),
+      imageUrl: item.item_image.attached? ? rails_blob_path(item.item_image.variant(resize_to_limit: [300, 300]), only_path: true) : asset_path('no_image_square.jpg'),
+      showPath: item_path(item)
+    }
+  end
 
-<% if @purchased_items.empty? %>
-  <p>まだ購入済みのアイテムはありません。</p>
-<% else %>
-  <div class="purchased-items-grid"> <%# 購入済みアイテムをグリッド表示するためのコンテナ %>
-    <% @purchased_items.each do |item| %>
-      <div class="purchased-item-card"> <%# 各アイテムのカード %>
-        <h3><%= link_to item.name, item_path(item) %></h3> <%# アイテム名をクリックで詳細へ %>
-        <% if item.item_image.attached? %>
-          <%= image_tag item.item_image.variant(resize_to_limit: [200, 200]), alt: item.name, class: "item-image" %>
-        <% else %>
-          <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
-        <% end %>
-        <p><strong>購入日:</strong> <%= item.promoted_to_owned_at.present? ? l(item.promoted_to_owned_at, format: :long) : '未登録' %></p> <%# 購入日を表示 %>
-        <p>ブランド: <%= item.brand&.name || '未登録' %></p>
-        <%# 必要に応じて他の情報もここに追加 %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+  item_grid_props = {
+    items: items_data,
+    type: 'purchased',
+    title: '購入済みアイテム',
+    description: "#{items_data.length}個のアイテムを購入済みです",
+    emptyMessage: 'まだ購入済みのアイテムはありません',
+    emptyAction: {
+      text: '欲しいものリストから購入する',
+      url: wishes_path
+    }
+  }
+%>
 
-<p><%= link_to '欲しいものリストに戻る', wishes_path %></p>
+<%# Reactコンポーネントのマウントポイント %>
+<div id="item-grid-container" data-props="<%= item_grid_props.to_json %>"></div>
+
+<%# 戻るボタン %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+  <%= link_to wishes_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors" do %>
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    欲しいものリストに戻る
+  <% end %>
+</div>

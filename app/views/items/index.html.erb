@@ -1,71 +1,44 @@
 <%# app/views/items/index.html.erb %>
 
-<h1>My Wardrobe - 所持品一覧</h1>
+<%
+  # Reactコンポーネントに渡すデータを準備
+  items_data = @items.map do |item|
+    {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.item_image.attached? ? url_for(item.item_image.variant(resize_to_limit: [300, 300])) : nil,
+      brand: {
+        id: item.brand&.id,
+        name: item.brand&.name || "未設定"
+      },
+      category: {
+        id: item.category&.id,
+        name: item.category&.name || "未設定"
+      },
+      season: {
+        id: item.season&.id,
+        name: item.season&.name || "未設定"
+      },
+      memo: item.memo,
+      showPath: item_path(item)
+    }
+  end
 
-<div style="margin-bottom: 20px;">
-  <strong>カテゴリーで絞り込む:</strong>
-  <%= link_to "すべて", items_path %> |
+  categories_data = Category.all.map do |category|
+    {
+      id: category.id,
+      name: category.name
+    }
+  end
 
-  <%# Categoryモデルに登録されている全てのカテゴリーを取得して、それぞれリンクを作成します %>
-  <% Category.all.each do |category| %>
-    <%= link_to category.name, items_path(category_id: category.id) %> |
-  <% end %>
-</div>
-<hr>
-
-<%= notice %> <%# createアクションで設定したnoticeメッセージを表示 %>
-
-<div class="items-grid">
-  <% @items.each do |item| %>
-    <div class="item-card">
-      <% if item.item_image.attached? %> <%# item_imageが添付されているか確認 %>
-        <%= image_tag item.item_image, alt: item.name, class: "item-image" %> <%# 添付された画像を表示 %>
-      <% else %>
-        <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
-      <% end %>
-      <h2><%= item.name %></h2>
-      <p>ブランド: <%= item.brand&.name %></p> <%# brandが存在しない場合（nilの場合）にエラーにならないように&.を使用 %>
-      <p>カテゴリー: <%= item.category&.name %></p>
-      <p>シーズン: <%= item.season&.name %></p>
-      <p><%= item.memo %></p>
-      <%# 後で詳細ページへのリンクや編集・削除ボタンを追加 %>
-      <%= link_to '詳細を見る', item_path(item) %>
-    </div>
-  <% end %>
-</div>
-
-<%= link_to '新しいアイテムを登録', new_item_path %>
-
-<style>
-  /* ここは一時的なCSSです。後でassets/stylesheetsに移動しましょう */
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
+  item_grid_props = {
+    items: items_data,
+    categories: categories_data,
+    currentCategory: params[:category_id],
+    type: 'item'
   }
-  .item-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-  .item-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-  .no-image-placeholder {
-    width: 100%;
-    height: 150px; /* 画像の高さに合わせて調整 */
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #888;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-</style>
+%>
+
+<%# Reactコンポーネントのマウントポイント %>
+<div id="item-grid-container" data-props="<%= item_grid_props.to_json %>"></div>
+

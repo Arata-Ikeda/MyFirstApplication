@@ -1,28 +1,36 @@
-# Dockerfile
-
-# RUBY_VERSIONが.ruby-versionとGemfileのバージョンと一致していることを確認
+# ベースとなるRubyイメージを指定
 ARG RUBY_VERSION=3.4.4
 FROM ruby:$RUBY_VERSION
 
-# ↓ RUN命令を2つに分割します
+# 必要なOSパッケージ、Node.js、Yarnを一度にインストール
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update -qq && \
+    apt-get install -y build-essential git curl sqlite3 nodejs libvips-dev && \
+    npm install -g yarn
 
-# 最初に、これまで通りのパッケージをインストール
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git curl sqlite3
-
-# 次に、libvips-devだけを独立してインストール
-RUN apt-get install -y libvips-dev
-
-# Railsアプリケーションはここに配置
+# 作業ディレクトリを設定
 WORKDIR /rails
 
-# bundle installを実行
-COPY Gemfile Gemfile.lock ./
+# --- ここからが最終修正版の戦略 ---
+
+# 1. package.jsonをコピー
+COPY package.json ./
+
+# 2. yarn installを実行
+# これがnode_modulesとyarn.lockをイメージ内に正しく生成する
+RUN yarn install
+
+# 3. Gemfileをコピー
+COPY Gemfile* ./
+
+# 4. bundle installを実行
 RUN bundle install
 
-# アプリケーションコードをコピー
+# 5. 最後にアプリケーションの全コードをコピー
 COPY . .
 
-# デフォルトでサーバーを起動、実行時に上書き可能
+# --- ここまで ---
+
+# ポートを公開し、デフォルトの起動コマンドを設定
 EXPOSE 3000
-CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
+CMD ["./bin/dev"]

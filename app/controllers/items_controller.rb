@@ -5,15 +5,15 @@ class ItemsController < ApplicationController
 
   # ログインユーザーの所持品を表示
   def index
-  # ベースとなるクエリを準備（ログインユーザーの、所持品だけ）
-  items_relation = current_user.items.status_owned.includes(:brand, :season, :category).order(created_at: :desc)
+    # ベースとなるクエリを準備（ログインユーザーの、所持品だけ）
+    items_relation = current_user.items.status_owned.includes(:brand, :season, :category).order(created_at: :desc)
 
-  if params[:category_id].present?
-    items_relation = items_relation.where(category_id: params[:category_id])
+    if params[:category_id].present?
+      items_relation = items_relation.where(category_id: params[:category_id])
+    end
+
+    @items = items_relation.includes(:category, :brand, :season).order(created_at: :desc)
   end
-
-  @items = items_relation.includes(:category, :brand, :season).order(created_at: :desc)
-end
 
   def new
     @item = Item.new

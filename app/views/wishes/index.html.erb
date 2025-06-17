@@ -1,58 +1,90 @@
-<h1>My Wishlist - 欲しいもの一覧</h1>
+<%# app/views/wishes/index.html.erb %>
 
-<p style="font-size: 0.95em; margin-bottom: 1.5em;">
-  <%= link_to '購入済みアイテム一覧はこちら', purchased_wishes_path, style: 'font-size:0.95em; color:#007bff;' %>
-</p>
+<%
+  # Reactコンポーネントに渡すデータを準備
+  wishes_data = @wish_items.map do |item|
+    {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.item_image.attached? ? url_for(item.item_image.variant(resize_to_limit: [300, 300])) : nil,
+      brand: {
+        id: item.brand&.id,
+        name: item.brand&.name || "未設定"
+      },
+      category: {
+        id: item.category&.id,
+        name: item.category&.name || "未設定"
+      },
+      season: {
+        id: item.season&.id,
+        name: item.season&.name || "未設定"
+      },
+      memo: item.memo,
+      showPath: wish_path(item)
+    }
+  end
 
-<div class="header-actions" style="margin-bottom: 20px;">
-  <%= link_to '新しい欲しいものを登録する', new_wish_path, class: 'btn btn-primary' %>
+  item_grid_props = {
+    items: wishes_data,
+    categories: [],  # ウィッシュリストではカテゴリフィルターを使わない
+    type: 'wish',
+    onPurchaseClick: 'handlePurchase'  # JavaScriptで処理するための識別子
+  }
+%>
+
+<%# Reactコンポーネントのマウントポイント %>
+<div id="item-grid-container" data-props="<%= item_grid_props.to_json %>"></div>
+
+<%# アクションボタン %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+  <%= link_to purchased_wishes_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors" do %>
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    購入済みアイテム一覧
+  <% end %>
 </div>
-<hr>
 
-<% if @wish_items.any? %>
-  <div class="items-grid">
-    <% @wish_items.each do |item| %>
-      <div class="item-card">
-        <%# 画像に詳細ページへのリンクを貼ります %>
-        <%= link_to wish_path(item) do %>
-          <% if item.item_image.attached? %>
-            <%= image_tag item.item_image.variant(resize_to_limit: [300, 300]), alt: item.name, class: "item-image" %>
-          <% else %>
-            <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
-          <% end %>
-        <% end %>
-
-        <%# アイテム名にもリンクを貼っておくと親切です %>
-        <h2><%= link_to item.name, wish_path(item) %></h2>
-
-        <p><strong>ブランド:</strong> <%= item.brand&.name %></p>
-        <p><strong>シーズン:</strong> <%= item.season&.name %></p>
-      </div>
-    <% end %>
-  </div>
-<% else %>
-  <p>欲しいものはまだ登録されていません。</p>
-<% end %>
-
-<%# items/index.html.erb と同じスタイルを適用 %>
-<style>
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-  .item-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-  .item-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-</style>
+<%# 購入日入力モーダル用のJavaScript %>
+<script>
+  // グローバルに購入処理関数を定義
+  window.handlePurchase = function(item) {
+    // 今日の日付をデフォルト値として設定
+    const today = new Date().toISOString().split('T')[0];
+    const purchaseDate = prompt(`"${item.name}"の購入日を入力してください:`, today);
+    
+    if (purchaseDate) {
+      // CSRFトークンを取得
+      const csrfToken = document.querySelector('[name="csrf-token"]').content;
+      
+      // フォームを動的に作成して送信
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/wishes/${item.id}/purchased_confirm`;
+      
+      // CSRFトークン
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'authenticity_token';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+      
+      // PATCHメソッド
+      const methodInput = document.createElement('input');
+      methodInput.type = 'hidden';
+      methodInput.name = '_method';
+      methodInput.value = 'patch';
+      form.appendChild(methodInput);
+      
+      // 購入日
+      const dateInput = document.createElement('input');
+      dateInput.type = 'hidden';
+      dateInput.name = 'item[purchase_date]';
+      dateInput.value = purchaseDate;
+      form.appendChild(dateInput);
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  };
+</script>

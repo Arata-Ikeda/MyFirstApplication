@@ -1,36 +1,22 @@
 <%# app/views/coordinates/index.html.erb %>
 
-<h1>My Outfits - コーディネート一覧</h1>
+<%
+  # Reactコンポーネントに渡すデータを準備
+  coordinates_data = @coordinates.map do |coordinate|
+    {
+      id: coordinate.id,
+      date: coordinate.worn_on&.strftime('%Y/%m/%d') || '日付未登録',
+      imageUrl: coordinate.coordinate_image.attached? ? rails_blob_path(coordinate.coordinate_image.variant(resize_to_limit: [300, 300]), only_path: true) : asset_path('no_image_square.jpg'),
+      itemCount: coordinate.coordinated_items.count,
+      showPath: coordinate_path(coordinate)
+    }
+  end
 
-<div class="header-actions">
-  <%= link_to '新しいコーディネートを登録する', new_coordinate_path, class: 'btn btn-primary' %>
-</div>
-<hr>
+  coordinate_grid_props = {
+    coordinates: coordinates_data
+  }
+%>
 
-<% if @coordinates.any? %>
-  <div class="items-grid">
-    <% @coordinates.each do |coordinate| %>
-      <div class="item-card">
-        <%# 画像全体を詳細ページへのリンクにする %>
-        <%= link_to coordinate_path(coordinate) do %>
-          <% if coordinate.coordinate_image.attached? %>
-            <%= image_tag coordinate.coordinate_image.variant(resize_to_limit: [300, 300]) %>
-          <% else %>
-            <%= image_tag "no_image_square.jpg", alt: "No Image", class: "item-image" %>
-          <% end %>
-        <% end %>
+<%# Reactコンポーネントのマウントポイント %>
+<div id="coordinate-grid-container" data-props="<%= coordinate_grid_props.to_json %>"></div>
 
-    
-        <p class="outfit-date" style="margin-top: 10px; text-align: center;">
-          <% if coordinate.worn_on.present? %>
-            <%= coordinate.worn_on.strftime('%Y/%m/%d') %>
-          <% else %>
-            日付未登録
-          <% end %>
-        </p>
-      </div>
-    <% end %>
-  </div>
-<% else %>
-  <p>まだコーディネートの記録がありません。最初のコーディネートを登録しましょう！</p>
-<% end %>

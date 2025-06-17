@@ -1,2 +1,30 @@
-<h1>コーディネートを編集する</h1>
-<%= render 'form' %>
+<div class="min-h-screen bg-white py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        コーディネートを編集
+      </h1>
+      <p class="text-gray-700">
+        コーディネート情報を更新してください
+      </p>
+    </div>
+
+    <!-- フォームカード -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-8">
+        <%= render 'form' %>
+      </div>
+    </div>
+
+    <!-- 戻るボタン -->
+    <div class="mt-6">
+      <%= link_to @coordinate, class: "inline-flex items-center text-sm text-gray-700 hover:text-gray-900 transition-colors" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        コーディネートに戻る
+      <% end %>
+    </div>
+  </div>
+</div>

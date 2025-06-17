@@ -1,101 +1,159 @@
 <%# app/views/items/edit.html.erb %>
 
-<h1><%= @item.name %> を編集する</h1>
-
-<%# フォーム送信時にエラーがあった場合に表示するエリア %>
-<%= form_with(model: @item, local: true) do |form| %>
-  <% if form.object.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(form.object.errors.count, "error") %> prevented this item from being saved:</h2>
-      <ul>
-        <% form.object.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        アイテムを編集
+      </h1>
+      <p class="text-gray-600">
+        「<%= @item.name %>」の情報を更新してください
+      </p>
     </div>
-  <% end %>
 
-  <%# アイテム名入力フィールド %>
-  <div class="field">
-    <%= form.label :name, "アイテム名" %>
-    <%= form.text_field :name %>
-  </div>
+    <!-- フォームカード -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-8">
+        <%= form_with(model: @item, local: true, class: "space-y-6") do |form| %>
+          <!-- エラー表示 -->
+          <% if form.object.errors.any? %>
+            <div class="rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    入力内容に問題があります
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                      <% form.object.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
 
-  <%# カテゴリー選択プルダウン %>
-  <div class="field">
-    <%= form.label :category_id, "カテゴリー" %>
-    <%# Categoryモデルから既存のカテゴリーを選択させる。display_orderでソート。 %>
-    <%= form.collection_select :category_id, Category.all.order(:display_order), :id, :name, prompt: "カテゴリーを選択してください" %>
-  </div>
+          <!-- 現在の画像表示 -->
+          <% if @item.item_image.attached? %>
+            <div class="text-center mb-6">
+              <p class="text-sm font-medium text-gray-700 mb-3">現在の画像</p>
+              <%= image_tag @item.item_image, alt: @item.name, class: "w-48 h-48 object-cover rounded-lg mx-auto shadow-sm" %>
+            </div>
+          <% end %>
 
-  <%# ブランド名入力フィールド（新規作成または既存選択） %>
-  <div class="field">
-    <%= form.fields_for :brand do |brand_fields| %>
-      <%= brand_fields.label :name, "ブランド名（新しいブランドは直接入力、既存ブランドはサジェストから選択）" %>
-      <%= brand_fields.text_field :name, list: "existing_brands" %>
-    <% end %>
-    <%# 既存ブランドの候補リスト（datalistはinputとidで紐付ける） %>
-    <datalist id="existing_brands">
-      <% Brand.all.order(:name).each do |brand| %>
-        <option value="<%= brand.name %>">
-      <% end %>
-    </datalist>
-  </div>
+          <!-- アイテム名 -->
+          <div>
+            <%= form.label :name, "アイテム名", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "例: ユニクロ ウルトラライトダウン" %>
+          </div>
 
-  <%# シーズン名入力フィールド（新規作成または既存選択） %>
-  <div class="field">
-    <%= form.fields_for :season do |season_fields| %>
-      <%= season_fields.label :name, "シーズン（新しいシーズンは直接入力、既存シーズンはサジェストから選択）" %>
-      <%= season_fields.text_field :name, list: "existing_seasons" %>
-    <% end %>
-    <%# 既存シーズンの候補リスト %>
-    <datalist id="existing_seasons">
-      <% Season.all.order(:display_order).each do |season| %>
-        <option value="<%= season.name %>">
-      <% end %>
-    </datalist>
-  </div>
+          <!-- カテゴリー -->
+          <div>
+            <%= form.label :category_id, "カテゴリー", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.collection_select :category_id, Category.all.order(:display_order), :id, :name, 
+                { prompt: "カテゴリーを選択してください" }, 
+                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm" } %>
+          </div>
 
-  <%# 購入日入力フィールド %>
-  <div class="field">
-    <%= form.label :purchase_date, "購入日" %>
-    <%= form.date_field :purchase_date %> <%# HTML5のdateタイプで日付ピッカーを提供 %>
-  </div>
+          <!-- ブランド -->
+          <div>
+            <%= form.fields_for :brand do |brand_fields| %>
+              <%= brand_fields.label :name, "ブランド", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= brand_fields.text_field :name, 
+                  list: "existing_brands", 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm",
+                  placeholder: "例: ユニクロ" %>
+            <% end %>
+            <datalist id="existing_brands">
+              <% Brand.all.order(:name).each do |brand| %>
+                <option value="<%= brand.name %>">
+              <% end %>
+            </datalist>
+          </div>
 
-  <%# 価格入力フィールド %>
-  <div class="field">
-    <%= form.label :price, "価格" %>
-    <%= form.number_field :price %> <%# 数値入力に特化したフィールド %>
-  </div>
+          <!-- シーズン -->
+          <div>
+            <%= form.fields_for :season do |season_fields| %>
+              <%= season_fields.label :name, "シーズン", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= season_fields.text_field :name, 
+                  list: "existing_seasons", 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm",
+                  placeholder: "例: 春夏" %>
+            <% end %>
+            <datalist id="existing_seasons">
+              <% Season.all.order(:display_order).each do |season| %>
+                <option value="<%= season.name %>">
+              <% end %>
+            </datalist>
+          </div>
 
-  <%# メモ入力フィールド %>
-  <div class="field">
-    <%= form.label :memo, "メモ" %>
-    <%= form.text_area :memo %>
-  </div>
+          <!-- 購入日 -->
+          <div>
+            <%= form.label :purchase_date, "購入日", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.date_field :purchase_date, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm" %>
+          </div>
 
-  <%# 写真ファイル選択フィールド（Active Storage用） %>
-  <div class="field">
-    <%= form.label :item_image, "写真ファイルを選択（変更する場合のみ）" %>
-    <%= form.file_field :item_image %>
-    <%# ★現在の画像を表示する部分をシンプルにしました★ %>
-    <% if @item.item_image.attached? %>
-      <div style="margin-top: 10px;">
-        <p>現在の画像:</p>
-        <%# リサイズ処理を外しました。元のサイズで表示されます %>
-        <%= image_tag @item.item_image, class: "current-image-thumbnail" %>
+          <!-- 価格 -->
+          <div>
+            <%= form.label :price, "価格", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">¥</span>
+              <%= form.number_field :price, class: "block w-full pl-8 rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "0" %>
+            </div>
+          </div>
+
+          <!-- メモ -->
+          <div>
+            <%= form.label :memo, "メモ", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_area :memo, rows: 4, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "着心地や使用シーンなど自由にメモできます" %>
+          </div>
+
+          <!-- 画像アップロード -->
+          <div>
+            <%= form.label :item_image, "アイテム画像", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+              <div class="space-y-1 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="text-sm text-gray-600">
+                  <%= form.file_field :item_image, class: "sr-only", id: "item-file-upload" %>
+                  <label for="item-file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-gray-600 hover:text-gray-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gray-500">
+                    <span>画像を変更する場合はアップロード</span>
+                  </label>
+                  <p class="pl-1">またはドラッグ&ドロップ</p>
+                </div>
+                <p class="text-xs text-gray-500">PNG, JPG, GIF（最大10MB）</p>
+              </div>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">
+              ※新しい画像をアップロードしない場合、現在の画像がそのまま使用されます
+            </p>
+          </div>
+
+          <!-- 送信ボタン -->
+          <div class="flex justify-end space-x-3">
+            <%= link_to "キャンセル", @item, class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+            <%= form.submit "アイテムを更新", class: "bg-gray-900 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+          </div>
+        <% end %>
       </div>
-    <% end %>
-  </div>
+    </div>
 
-  <%# 送信ボタン %>
-  <div class="actions">
-    <%= form.submit "アイテムを更新" %>
+    <!-- 戻るボタン -->
+    <div class="mt-6">
+      <%= link_to @item, class: "inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        アイテム詳細に戻る
+      <% end %>
+    </div>
   </div>
-<% end %>
-
-<%# 関連リンク %>
-<div class="item-actions">
-  <%= link_to '詳細へ戻る', @item %> |
-  <%= link_to '一覧へ戻る', items_path %>
 </div>

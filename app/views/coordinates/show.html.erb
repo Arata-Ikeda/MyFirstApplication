@@ -1,13 +1,13 @@
 <%# app/views/coordinates/show.html.erb %>
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-white py-8">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
         <%= (@coordinate.worn_on ? @coordinate.worn_on.strftime('%Y年%m月%d日') : '日付未登録') %> のコーディネート
       </h1>
-      <p class="text-gray-600">
+      <p class="text-gray-700">
         コーディネート詳細とアイテム一覧
       </p>
     </div>

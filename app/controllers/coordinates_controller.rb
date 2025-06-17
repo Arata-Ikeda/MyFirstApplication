@@ -8,7 +8,8 @@ class CoordinatesController < ApplicationController
 
   def new
     @coordinate = Coordinate.new
-    @items = current_user.items.order(created_at: :desc)
+    @items = current_user.items.includes(:category, :brand, item_image_attachment: :blob).order(created_at: :desc)
+    @categories = Category.joins(:items).where(items: { user: current_user }).distinct.order(:name)
   end
 
   def create
@@ -17,6 +18,8 @@ class CoordinatesController < ApplicationController
     if @coordinate.save
       redirect_to coordinates_path, notice: 'コーディネートが正常に作成されました。'
     else
+      @items = current_user.items.includes(:category, :brand, item_image_attachment: :blob).order(created_at: :desc)
+      @categories = Category.joins(:items).where(items: { user: current_user }).distinct.order(:name)
       render :new, status: :unprocessable_entity
     end
   end
@@ -26,13 +29,16 @@ class CoordinatesController < ApplicationController
   end
 
   def edit
-    @items = current_user.items.order(created_at: :desc)
+    @items = current_user.items.includes(:category, :brand, item_image_attachment: :blob).order(created_at: :desc)
+    @categories = Category.joins(:items).where(items: { user: current_user }).distinct.order(:name)
   end
 
   def update
     if @coordinate.update(coordinate_params)
       redirect_to @coordinate, notice: 'コーディネートを更新しました。'
     else
+      @items = current_user.items.includes(:category, :brand, item_image_attachment: :blob).order(created_at: :desc)
+      @categories = Category.joins(:items).where(items: { user: current_user }).distinct.order(:name)
       render :edit, status: :unprocessable_entity
     end
   end

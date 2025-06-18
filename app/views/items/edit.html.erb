@@ -50,7 +50,7 @@
           <!-- アイテム名 -->
           <div>
             <%= form.label :name, "アイテム名", class: "block text-sm font-medium text-gray-700 mb-2" %>
-            <%= form.text_field :name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "例: ユニクロ ウルトラライトダウン" %>
+            <%= form.text_field :name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm", placeholder: "例: ユニクロ ウルトラライトダウン", autocomplete: "off" %>
           </div>
 
           <!-- カテゴリー -->
@@ -71,7 +71,7 @@
                   placeholder: "例: ユニクロ" %>
             <% end %>
             <datalist id="existing_brands">
-              <% Brand.all.order(:name).each do |brand| %>
+              <% current_user.brands.order(:name).each do |brand| %>
                 <option value="<%= brand.name %>">
               <% end %>
             </datalist>
@@ -87,7 +87,7 @@
                   placeholder: "例: 春夏" %>
             <% end %>
             <datalist id="existing_seasons">
-              <% Season.all.order(:display_order).each do |season| %>
+              <% current_user.seasons.order(:display_order).each do |season| %>
                 <option value="<%= season.name %>">
               <% end %>
             </datalist>

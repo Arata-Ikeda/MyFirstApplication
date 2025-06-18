@@ -16,7 +16,7 @@
 
   <div class="field">
     <%= form.label :name, '欲しいアイテム名' %>
-    <%= form.text_field :name, required: true %>
+    <%= form.text_field :name, required: true, autocomplete: "off" %>
   </div>
 
   <div class="field">
@@ -44,7 +44,7 @@
       <%= brand_fields.text_field :name, list: "existing_brands" %>
     <% end %>
     <datalist id="existing_brands">
-      <% Brand.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
+      <% current_user.brands.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
     </datalist>
   </div>
   
@@ -55,7 +55,7 @@
       <%= season_fields.text_field :name, list: "existing_seasons" %>
     <% end %>
     <datalist id="existing_seasons">
-      <% Season.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
+      <% current_user.seasons.pluck(:name).each do |name| %><option value="<%= name %>"><% end %>
     </datalist>
   </div>
 

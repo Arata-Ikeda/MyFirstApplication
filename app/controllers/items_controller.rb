@@ -29,12 +29,12 @@ class ItemsController < ApplicationController
 
     # digを使って安全にブランド名を取得
     if brand_name = params.dig(:item, :brand_attributes, :name).presence
-      @item.brand = Brand.find_or_create_by(name: brand_name)
+      @item.brand = current_user.brands.find_or_create_by(name: brand_name)
     end
 
     # digを使って安全にシーズン名を取得
     if season_name = params.dig(:item, :season_attributes, :name).presence
-      @item.season = Season.find_or_create_by(name: season_name)
+      @item.season = current_user.seasons.find_or_create_by(name: season_name)
     end
 
     if @item.save
@@ -60,7 +60,7 @@ class ItemsController < ApplicationController
     end
 
     if season_name = params.dig(:item, :season_attributes, :name).presence
-      @item.season = Season.find_or_create_by(name: season_name)
+      @item.season = current_user.seasons.find_or_create_by(name: season_name)
     end
 
     if @item.update(item_params)

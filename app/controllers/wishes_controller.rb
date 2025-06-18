@@ -18,11 +18,11 @@ class WishesController < ApplicationController
     @wish_item.status = :wish
 
     if brand_name = params.dig(:item, :brand_attributes, :name).presence
-      @wish_item.brand = Brand.find_or_create_by(name: brand_name)
+      @wish_item.brand = current_user.brands.find_or_create_by(name: brand_name)
     end
 
     if season_name = params.dig(:item, :season_attributes, :name).presence
-      @wish_item.season = Season.find_or_create_by(name: season_name)
+      @wish_item.season = current_user.seasons.find_or_create_by(name: season_name)
     end
 
     if @wish_item.save
@@ -53,7 +53,7 @@ class WishesController < ApplicationController
     end
 
     if season_name = params.dig(:item, :season_attributes, :name).presence
-      @wish_item.season = Season.find_or_create_by(name: season_name)
+      @wish_item.season = current_user.seasons.find_or_create_by(name: season_name)
     end
 
     if @wish_item.update(item_params)
